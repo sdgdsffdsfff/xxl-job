@@ -3,7 +3,7 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="XxlJobInfoMapper">
 	
-	<resultMap id="XxlJobInfo" type="com.xxl.job.core.model.XxlJobInfo" >
+	<resultMap id="XxlJobInfo" type="com.xxl.job.admin.core.model.XxlJobInfo" >
 		<result column="id" property="id" />
 	
 		<result column="job_group" property="jobGroup" />
@@ -11,7 +11,6 @@
 	    <result column="job_cron" property="jobCron" />
 	    <result column="job_desc" property="jobDesc" />
 	    <result column="job_class" property="jobClass" />
-	    <result column="job_data" property="jobData" />
 	    
 	    <result column="add_time" property="addTime" />
 	    <result column="update_time" property="updateTime" />
@@ -19,6 +18,10 @@
 	    <result column="author" property="author" />
 	    <result column="alarm_email" property="alarmEmail" />
 	    <result column="alarm_threshold" property="alarmThreshold" />
+	    
+	    <result column="executor_address" property="executorAddress" />
+	    <result column="executor_handler" property="executorHandler" />
+	    <result column="executor_param" property="executorParam" />
 	    
 	    <result column="glue_switch" property="glueSwitch" />
 	    <result column="glue_source" property="glueSource" />
@@ -32,12 +35,14 @@
 		t.job_cron,
 		t.job_desc,
 		t.job_class,
-		t.job_data,
 		t.add_time,
 		t.update_time,
 		t.author,
 		t.alarm_email,
 		t.alarm_threshold,
+		t.executor_address,
+		t.executor_handler,
+		t.executor_param,
 		t.glue_switch,
 		t.glue_source,
 		t.glue_remark
@@ -71,19 +76,21 @@
 		</trim>
 	</select>
 	
-	<insert id="save" parameterType="com.xxl.job.core.model.XxlJobInfo" useGeneratedKeys="true" keyProperty="id" >
+	<insert id="save" parameterType="com.xxl.job.admin.core.model.XxlJobInfo" useGeneratedKeys="true" keyProperty="id" >
 		INSERT INTO `xxl_job_qrtz_trigger_info` (
 			job_group,
 			job_name,
 			job_cron,
 			job_desc,
 			job_class,
-			job_data,
 			add_time,
 			update_time,
 			author,
 			alarm_email,
 			alarm_threshold,
+			executor_address,
+			executor_handler,
+			executor_param,
 			glue_switch,
 			glue_source,
 			glue_remark
@@ -93,12 +100,14 @@
 			#{jobCron}, 
 			#{jobDesc}, 
 			#{jobClass}, 
-			#{jobData},
 			NOW(),
 			NOW(),
 			#{author},
 			#{alarmEmail},
 			#{alarmThreshold},
+			#{executorAddress},
+			#{executorHandler},
+			#{executorParam},
 			#{glueSwitch},
 			#{glueSource},
 			#{glueRemark}
@@ -115,16 +124,18 @@
 			AND t.job_name = #{jobName}
 	</select>
 	
-	<update id="update" parameterType="com.xxl.job.core.model.XxlJobInfo" >
+	<update id="update" parameterType="com.xxl.job.admin.core.model.XxlJobInfo" >
 		UPDATE `xxl_job_qrtz_trigger_info` 
 		SET 
 			job_cron = #{jobCron},
 			job_desc = #{jobDesc},
-			job_data = #{jobData},
 			update_time = NOW(),
 			author = #{author},
 			alarm_email = #{alarmEmail},
 			alarm_threshold = #{alarmThreshold},
+			executor_address = #{executorAddress},
+			executor_handler = #{executorHandler},
+			executor_param = #{executorParam},
 			glue_switch = #{glueSwitch},
 			glue_source = #{glueSource},
 			glue_remark = #{glueRemark}

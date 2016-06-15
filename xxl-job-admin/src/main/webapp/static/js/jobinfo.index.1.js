@@ -33,17 +33,9 @@ $(function() {
 	                { "data": 'jobDesc', "visible" : true},
 	                { "data": 'jobCron', "visible" : true},
 	                { "data": 'jobClass', "visible" : false},
-	                { 
-	                	"data": 'jobData',
-	                	"visible" : true,
-	                	"render": function ( data, type, row ) {
-	                		var _jobData = eval('(' + data + ')');	// row.jobData
-	                		var html = "<p title='" + data + "'>执行器：" + _jobData.handler_name +
-	                			"<br>执行参数：" + _jobData.handler_params + 
-	                			"<br>执行机器：" + _jobData.handler_address + "</p>";
-	                		return html;
-	                	}
-	                },
+	                { "data": 'executorAddress', "visible" : false},
+	                { "data": 'executorHandler', "visible" : false},
+	                { "data": 'executorParam', "visible" : false},
 	                { 
 	                	"data": 'addTime', 
 	                	"visible" : false, 
@@ -90,14 +82,11 @@ $(function() {
 	                			var logUrl = base_url +'/joblog?jobGroup='+ row.jobGroup +'&jobName='+ row.jobName;
 	                			
 	                			// log url
-	                			var codeHtml = "";
-	                			if(row.glueSwitch != 0){
+	                			var codeBtn = "";
+	                			if(row.glueSwitch > 0){
 	                				var codeUrl = base_url +'/jobcode?jobGroup='+ row.jobGroup +'&jobName='+ row.jobName;
-	                				codeHtml = '<button class="btn btn-warning btn-xs" type="button" onclick="javascript:window.open(\'' + codeUrl + '\')" >GLUE</button>  '
+	                				codeBtn = '<button class="btn btn-warning btn-xs" type="button" onclick="javascript:window.open(\'' + codeUrl + '\')" >GLUE</button>  '
 	                			}
-	                			
-	                			// job data
-	                			var jobDataMap = eval('(' + row.jobData + ')');
 	                			
 	                			var html = '<p id="'+ row.id +'" '+
 	                							' jobGroup="'+ row.jobGroup +'" '+
@@ -106,9 +95,9 @@ $(function() {
 	                							' jobDesc="'+ row.jobDesc +'" '+
 	                							' jobClass="'+ row.jobClass +'" '+
 	                							' jobData="'+ row.jobData +'" '+
-	                							' handler_params="'+jobDataMap.handler_params +'" '+
-	                							' handler_address="'+ jobDataMap.handler_address +'" '+
-	                							' handler_name="'+ jobDataMap.handler_name +'" '+
+	                							' executorAddress="'+row.executorAddress +'" '+
+	                							' executorHandler="'+ row.executorHandler +'" '+
+	                							' executorParam="'+ row.executorParam +'" '+
 	                							' author="'+ row.author +'" '+
 	                							' alarmEmail="'+ row.alarmEmail +'" '+
 	                							' alarmThreshold="'+ row.alarmThreshold +'" '+
@@ -118,7 +107,7 @@ $(function() {
 										pause_resume +
 										'<button class="btn btn-primary btn-xs" type="job_del" type="button" onclick="javascript:window.open(\'' + logUrl + '\')" >日志</button><br>  '+
 										'<button class="btn btn-warning btn-xs update" type="button">编辑</button>  '+
-										codeHtml +
+										codeBtn +
 								  		'<button class="btn btn-danger btn-xs job_operate" type="job_del" type="button">删除</button>  '+
 									'</p>';
 									
@@ -236,11 +225,11 @@ $(function() {
             	required : true ,
                 maxlength: 200
             },
-            handler_address : {
+            executorAddress : {
             	required : true ,
                 maxlength: 200
             },
-            handler_name : {
+            executorHandler : {
             	required : true ,
                 maxlength: 200
             },
@@ -264,20 +253,20 @@ $(function() {
                 maxlength:"“任务名”长度不应超过100位"
             },  
             jobCron : {
-            	required :"请输入“Corn”."  ,
-                maxlength:"“Corn”长度不应超过100位"
+            	required :"请输入“Cron”."  ,
+                maxlength:"“Cron”长度不应超过100位"
             },  
             jobDesc : {
             	required :"请输入“任务描述”."  ,
                 maxlength:"“任务描述”长度不应超过200位"
             },  
-            handler_address : {
-            	required :"请输入“机器地址”."  ,
-                maxlength:"“机器地址”长度不应超过200位"
+            executorAddress : {
+            	required :"请输入“执行器地址”."  ,
+                maxlength:"“执行器地址”长度不应超过200位"
             },
-            handler_name : {
-            	required : "请输入“执行器”."  ,
-                maxlength: "“执行器”长度不应超过200位"
+            executorHandler : {
+            	required : "请输入“jobHandler”."  ,
+                maxlength: "“jobHandler”长度不应超过200位"
             },
             author : {
             	required : "请输入“负责人”."  ,
@@ -328,27 +317,27 @@ $(function() {
 	// GLUE模式开启
 	$("#addModal .form .ifGLUE").click(function(){
 		var ifGLUE = $(this).is(':checked');
-		var $handler_name = $("#addModal .form input[name='handler_name']");
+		var $executorHandler = $("#addModal .form input[name='executorHandler']");
 		var $glueSwitch = $("#addModal .form input[name='glueSwitch']");
 		if (ifGLUE) {
-			$handler_name.val("");
-			$handler_name.attr("readonly","readonly");
+			$executorHandler.val("");
+			$executorHandler.attr("readonly","readonly");
 			$glueSwitch.val(1);
 		} else {
-			$handler_name.removeAttr("readonly");
+			$executorHandler.removeAttr("readonly");
 			$glueSwitch.val(0);
 		}
 	});
 	$("#updateModal .form .ifGLUE").click(function(){
 		var ifGLUE = $(this).is(':checked');
-		var $handler_name = $("#updateModal .form input[name='handler_name']");
+		var $executorHandler = $("#updateModal .form input[name='executorHandler']");
 		var $glueSwitch = $("#updateModal .form input[name='glueSwitch']");
 		if (ifGLUE) {
-			$handler_name.val("");
-			$handler_name.attr("readonly","readonly");
+			$executorHandler.val("");
+			$executorHandler.attr("readonly","readonly");
 			$glueSwitch.val(1);
 		} else {
-			$handler_name.removeAttr("readonly");
+			$executorHandler.removeAttr("readonly");
 			$glueSwitch.val(0);
 		}
 	});
@@ -359,9 +348,9 @@ $(function() {
 		$("#updateModal .form input[name='jobName']").val($(this).parent('p').attr("jobName"));
 		$("#updateModal .form input[name='jobCron']").val($(this).parent('p').attr("jobCron"));
 		$("#updateModal .form input[name='jobDesc']").val($(this).parent('p').attr("jobDesc"));
-		$("#updateModal .form input[name='handler_address']").val($(this).parent('p').attr("handler_address"));
-		$("#updateModal .form input[name='handler_name']").val($(this).parent('p').attr("handler_name"));
-		$("#updateModal .form input[name='handler_params']").val($(this).parent('p').attr("handler_params"));
+		$("#updateModal .form input[name='executorAddress']").val($(this).parent('p').attr("executorAddress"));
+		$("#updateModal .form input[name='executorHandler']").val($(this).parent('p').attr("executorHandler"));
+		$("#updateModal .form input[name='executorParam']").val($(this).parent('p').attr("executorParam"));
 		$("#updateModal .form input[name='author']").val($(this).parent('p').attr("author"));
 		$("#updateModal .form input[name='alarmEmail']").val($(this).parent('p').attr("alarmEmail"));
 		$("#updateModal .form input[name='alarmThreshold']").val($(this).parent('p').attr("alarmThreshold"));
@@ -369,12 +358,12 @@ $(function() {
 		
 		// GLUE check
 		var $glueSwitch = $("#updateModal .form input[name='glueSwitch']");
-		var $handler_name = $("#updateModal .form input[name='handler_name']");
+		var $executorHandler = $("#updateModal .form input[name='executorHandler']");
 		if ($glueSwitch.val() != 0) {
-			$handler_name.attr("readonly","readonly");
+			$executorHandler.attr("readonly","readonly");
 			$("#updateModal .form .ifGLUE").attr("checked", true);
 		} else {
-			$handler_name.removeAttr("readonly");
+			$executorHandler.removeAttr("readonly");
 			$("#updateModal .form .ifGLUE").attr("checked", false);
 		}
 		
@@ -393,11 +382,11 @@ $(function() {
             	required : true ,
                 maxlength: 200
             },
-            handler_address : {
+            executorAddress : {
             	required : true ,
                 maxlength: 200
             },
-            handler_name : {
+            executorHandler : {
             	required : true ,
                 maxlength: 200
             },
@@ -416,20 +405,20 @@ $(function() {
         }, 
         messages : {  
             jobCron : {
-            	required :"请输入“Corn”."  ,
-                maxlength:"“Corn”长度不应超过100位"
+            	required :"请输入“Cron”."  ,
+                maxlength:"“Cron”长度不应超过100位"
             },  
             jobDesc : {
             	required :"请输入“任务描述”."  ,
                 maxlength:"“任务描述”长度不应超过200位"
             },  
-            handler_address : {
-            	required :"请输入“机器地址”."  ,
-                maxlength:"“机器地址”长度不应超过200位"
+            executorAddress : {
+            	required :"请输入“执行器地址”."  ,
+                maxlength:"“执行器地址”长度不应超过200位"
             },
-            handler_name : {
-            	required : "请输入“执行器”."  ,
-                maxlength: "“执行器”长度不应超过200位"
+            executorHandler : {
+            	required : "请输入“jobHandler”."  ,
+                maxlength: "“jobHandler”长度不应超过200位"
             },
             author : {
             	required : "请输入“负责人”."  ,
